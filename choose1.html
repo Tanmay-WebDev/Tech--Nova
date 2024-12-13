@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="TechNova.jpeg" type="image/x-icon">
+    <title>TechNova Checkout - Basic Plan</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Loading screen styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            display: none; /* Hidden by default */
+            z-index: 9999;
+        }
+
+        #navbar {
+            background-color: rgb(2, 2, 83);
+            font-family: "Noto Sans";
+        }
+
+        .navbar-nav .nav-link {
+            color: white;
+            font-family: "Poppins";
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: azure;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">TechNova</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="price.html">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Form -->
+    <div class="container my-5">
+        <h2>Checkout - Basic Plan</h2>
+        <p>Price: $<span id="price">5.89</span>/month</p>
+        <form id="checkoutForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" id="address" placeholder="Enter your address" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" class="form-control" id="phone" placeholder="Enter your phone number" required>
+            </div>
+            <button type="button" class="btn btn-outline-success" onclick="showPaymentPopup()">Proceed Payment</button>
+        </form>
+    </div>
+
+    <!-- Payment Popup -->
+    <div id="paymentPopup" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Confirm your payment for the Basic Plan ($5.89/month).</p>
+                    <button class="btn btn-outline-success" onclick="downloadReceipt()">Pay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Congratulations Popup -->
+    <div id="congratsPopup" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Congratulations!</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Your payment was successful!</p>
+                    <button class="btn btn-success" onclick="finalRedirect()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen with Bootstrap Spinner -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner-border text-light" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function showPaymentPopup() {
+            $('#paymentPopup').modal('show');
+        }
+
+        function downloadReceipt() {
+            const receipt = `Receipt for Basic Plan - $5.89/month\n\nName: ${document.getElementById('name').value}\nEmail: ${document.getElementById('email').value}\nAddress: ${document.getElementById('address').value}\nPhone: ${document.getElementById('phone').value}`;
+            const blob = new Blob([receipt], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'receipt.txt';
+            link.click();
+
+            // Show loading screen for 2 seconds
+            document.getElementById('loadingScreen').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                $('#congratsPopup').modal('show');
+            }, 2000);
+        }
+
+        function finalRedirect() {
+            // Show loading screen for 2 seconds before redirecting
+            document.getElementById('loadingScreen').style.display = 'flex';
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
